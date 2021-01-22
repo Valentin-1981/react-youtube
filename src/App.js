@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import TodoList from "./Todo/TodoList";
 import Context from "./context"
 import AddTodo from "./Todo/AddTodo";
@@ -9,6 +9,12 @@ function App() {
         {id: 2, completed: true, title: 'Купить масло'},
         {id: 3, completed: false, title: 'Купить молоко'},
     ]);
+
+    useEffect(() => {
+        fetch('https://jsonplaceholder.typicode.com/todos/1')
+            .then(response => response.json())
+            .then(json => console.log(json))
+    }, [])
 
     function toggleTodo(id) {
         setTodos(todos.map(todo => {
@@ -23,11 +29,23 @@ function App() {
         setTodos(todos.filter(todo => todo.id !== id));
     }
 
+    function addTodo(title) {
+        setTodos(
+            todos.concat(
+                [{
+                    title,
+                    id: Date.now(),
+                    completed: false,
+                }]
+            )
+        )
+    }
+
     return (
       <Context.Provider value={{removeTodo}}>
           <div className="wrapper">
             <h1>React Tutorial</h1>
-            <AddTodo/>
+            <AddTodo onCreate={addTodo} />
             {todos.length ? <TodoList todos={todos} onToggle={toggleTodo}/> : <p>No todos!</p>}
           </div>
       </Context.Provider>
